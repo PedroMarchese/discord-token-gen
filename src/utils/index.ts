@@ -1,5 +1,6 @@
-import getFingerprint from './getFingerprint';
+import { getFingerprint, commonHeaders } from './requestUtils';
 
 export {
-   getFingerprint
+   getFingerprint,
+   commonHeaders
 }

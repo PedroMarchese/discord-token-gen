@@ -10,7 +10,13 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@types/axios": "^0.14.0",
     "axios": "^0.27.2",
+    "dotenv": "^16.0.1",
+    "node-fetch": "^2.6.1",
     "python-shell": "^3.0.1"
+  },
+  "devDependencies": {
+    "@types/node-fetch": "^2.6.1"
   }
 }
