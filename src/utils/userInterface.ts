@@ -5,16 +5,12 @@ let rl = readline.createInterface({
    output: process.stdout
 });
 
-function readInput(message: string): string {
-   let input = '';
-   
-   rl.question(message, answer => {
-      input = answer;
-   });
+const question = (message: string) =>
+   new Promise<string>(resolve => rl.question(message, resolve))
+      .finally(() => rl.close());
 
-   rl.close();
-
-   return input;
+function readInput(message: string): Promise<string> {
+   return question(message);
 }
 
 export {

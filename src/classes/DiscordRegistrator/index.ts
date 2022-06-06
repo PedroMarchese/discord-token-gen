@@ -26,7 +26,7 @@ export default class DiscordRegistrator {
       }
    }
 
-   async start(): string {
+   public async start(i: number): Promise<string> {
       // Getting random account info
       let username = this.infoGen.randomUser();
       let password = this.infoGen.randomPassword();
@@ -37,6 +37,8 @@ export default class DiscordRegistrator {
       let payload = this.getPayload(username, email, password, dateOfBirth, fingerprint);
       let headers = commonHeaders(fingerprint);
       
+      console.log(`Registering Account Number ${i} | ${email}:${password}`);
+
       // Try to register without captcha
       let res = await axios.post(this.registerURL, payload, { headers: headers});
 
@@ -55,18 +57,14 @@ export default class DiscordRegistrator {
       let token = res.data.token;
 
       if (tokenReg.test(token)) {
-         console.log('Conta criada com sucesso');
+         console.log('Well succeeded!');
          
          return `${email}:${password}:${token}`;
       } else {
-         console.log('Falha ao criar a conta');
+         console.log('Failed at all :(');
          console.log(res);
 
          return 'failed';
       }
-   }
-
-   async registerBypass(payload: object, config: object) {
-      let res = await axios.post(this.registerURL, payload, config);
    }
 }
