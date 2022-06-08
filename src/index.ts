@@ -3,9 +3,7 @@ import { DiscordRegistrator } from './classes';
 import { readInput, sleep } from './utils'
 
 // Loading enviroment variables
-dotenv.config({
-   path: '../.env'
-});
+dotenv.config();
 
 async function main() {
    const attempts = parseInt(await readInput('How many accounts you wanna try to do?'));

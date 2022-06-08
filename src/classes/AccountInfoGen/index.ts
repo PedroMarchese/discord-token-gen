@@ -1,4 +1,5 @@
 import fs from 'fs';
+import axios from 'axios';
 
 export default class AccountInfoGen {
    constructor() {
@@ -16,11 +17,16 @@ export default class AccountInfoGen {
       return Math.random().toString(36).slice(2, 28);
    }
 
-   public randomEmail(): string {
+   public async randomEmail(email: string, password: string): Promise<string> {
+      const verificationLink = await axios.get(`https://getcode.hotmailbox.me/discord?email=${email}&password=${password}&timeout=30`, {
+         timeout: 3000
+      });
+      
+
       return '';
    }
 
    public randomBirth(): string {
-      return ''
+      return '';
    }
 }

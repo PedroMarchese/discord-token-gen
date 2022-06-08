@@ -33,9 +33,9 @@ export default class DiscordRegistrator {
       let email = this.infoGen.randomEmail();
       let dateOfBirth = this.infoGen.randomBirth();
       let fingerprint = await getFingerprint();
-      let captchaKey: string;
       let payload = this.getPayload(username, email, password, dateOfBirth, fingerprint);
       let headers = commonHeaders(fingerprint);
+      let captchaKey: string;
       
       console.log(`Registering Account Number ${i} | ${email}:${password}`);
 

@@ -1,6 +1,6 @@
-import CaptchaBypasser from './CaptchaBypasser';
-import AccountInfoGen from './AccountInfoGen';
-import DiscordRegistrator from './DiscordRegistrator';
+import CaptchaBypasser from './captchaBypasser';
+import AccountInfoGen from './accountInfoGen';
+import DiscordRegistrator from './discordRegistrator';
 
 export { 
    CaptchaBypasser,
