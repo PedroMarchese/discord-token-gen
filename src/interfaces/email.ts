@@ -1,4 +1,4 @@
 export default interface EmailI {
-   Email: string,
-   Password : string  
+   Email: string;
+   Password : string;  
 }

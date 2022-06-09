@@ -11,7 +11,7 @@ class AccountInfoGen {
    /**
     * This function generates a random username based on files/names.txt file
     * @author Raskolnkikov
-    * @return {string}
+    * @returns {string}
     */
    public randomUser(): string {
       const nameList = fs.readFileSync('../../../files/names.txt', { encoding: 'utf-8' })
@@ -24,7 +24,7 @@ class AccountInfoGen {
    /**
     * This function generates a random password converting a random number to string and slicing [2:28] using radix 
     * @author Raskolnkikov
-    * @return {string}
+    * @returns {string}
     */
    public randomPassword(): string {
       return Math.random().toString(36).slice(2, 28);
@@ -33,7 +33,7 @@ class AccountInfoGen {
    /**
     * This function returns a new email from hotmailbox
     * @author Raskolnkikov
-    * @return {EmailI}
+    * @returns {EmailI}
     */
    public async randomEmail(): Promise<EmailI> {
       const emailManager = new EmailManager();
@@ -48,7 +48,7 @@ class AccountInfoGen {
    /**
     * This function returns a random birth date
     * @author Raskolnkikov
-    * @return {string}
+    * @returns {string}
     */
    private randomDate(start: Date, end: Date): Date {
       const startTime = start.getTime();
@@ -60,7 +60,7 @@ class AccountInfoGen {
    /**
     * This function returns a random birth date
     * @author Raskolnkikov
-    * @return {string}
+    * @returns {string}
     */
    public randomBirth(): string {
       return this.randomDate(new Date('1995-02-12'), new Date('2001-02-12')).toLocaleDateString('en-US');

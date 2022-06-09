@@ -10,6 +10,7 @@ class EmailManager {
     * This method buys an email from hotmailbox and throw Error you don't have enough balance
     * @author Raskolnkikov
     * @param {number}
+    * @returns {Promise<EmailI | undefined>}
     */
    public async buyOne(): Promise<EmailI | undefined> {
       const apiUrl = `https://api.hotmailbox.me/mail/buy?apikey=${process.env.HOTMAIL_BOX}&mailcode=HOTMAIL&quantity=1`;

@@ -1,16 +1,32 @@
 import axios, { AxiosRequestTransformer } from 'axios';
 import { getFingerprint, commonHeaders } from '../utils';
-import { CaptchaBypasser, AccountInfoGen } from '.';
+import { CaptchaBypasser, AccountInfoGen, EmailManager } from '.';
 
+/**
+ * This class has the job of create accounts integrating all generator functions
+ * @author Raskolnkikov
+ */
 export default class DiscordRegistrator {
    infoGen: AccountInfoGen;
+   mailManager: EmailManager;
    registerURL: string;
 
    constructor () {
       this.infoGen = new AccountInfoGen();
+      this.mailManager = new EmailManager();
       this.registerURL = 'https://discord.com/api/v9/auth/register';
    }
    
+   /**
+    * 
+    * @param username 
+    * @param email 
+    * @param password 
+    * @param dateOfBirth 
+    * @param fingerprint 
+    * @param captchaKey 
+    * @returns {object}
+    */
    private getPayload(username: string, email: string, password: string, dateOfBirth: string, fingerprint: string, captchaKey?: string): object {
       return {
          captcha_key: captchaKey ? captchaKey : null,
@@ -26,28 +42,29 @@ export default class DiscordRegistrator {
       }
    }
 
-   public async start(i: number): Promise<string> {
-      // Getting random account info
+   public async start(): Promise<string | null> {
+      // Gets random account info
       let username = this.infoGen.randomUser();
       let password = this.infoGen.randomPassword();
       let email = await this.infoGen.randomEmail();
       let dateOfBirth = this.infoGen.randomBirth();
-      let fingerprint = await getFingerprint();
-      let payload = this.getPayload(username, email, password, dateOfBirth, fingerprint);
-      let headers = commonHeaders(fingerprint);
-      let captchaKey: string;
       
-      console.log(`Registering Account Number ${i} | ${email}:${password}`);
+      // Instancing req headers and payload
+      let fingerprint = await getFingerprint();
+      let payload = this.getPayload(username, email.Email, password, dateOfBirth, fingerprint);
+      let headers = commonHeaders(fingerprint);
+      
+      console.log(`Registering Account ${email}:${password}`);
 
       // Try to register without captcha
       let res = await axios.post(this.registerURL, payload, { headers: headers});
 
       // If captcha required
       if (res.status === 400) {
-         console.log('Solving captcha...');
+         console.log('Solving Captcha...');
 
          const cb = new CaptchaBypasser();
-         payload = this.getPayload(username, email, password, dateOfBirth, fingerprint, cb.bypass());
+         payload = this.getPayload(username, email.Email, password, dateOfBirth, fingerprint, cb.bypass());
 
          res = await axios.post(this.registerURL, payload, { headers: headers});
       }
@@ -64,7 +81,7 @@ export default class DiscordRegistrator {
          console.log('Failed at all :(');
          console.log(res);
 
-         return 'failed';
+         return null;
       }
    }
 }
