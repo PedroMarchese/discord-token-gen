@@ -1,6 +1,6 @@
 import axios, { AxiosRequestTransformer } from 'axios';
-import { getFingerprint, commonHeaders } from '../../utils';
-import { CaptchaBypasser, AccountInfoGen } from '..';
+import { getFingerprint, commonHeaders } from '../utils';
+import { CaptchaBypasser, AccountInfoGen } from '.';
 
 export default class DiscordRegistrator {
    infoGen: AccountInfoGen;
@@ -11,7 +11,7 @@ export default class DiscordRegistrator {
       this.registerURL = 'https://discord.com/api/v9/auth/register';
    }
    
-   getPayload(username: string, email: string, password: string, dateOfBirth: string, fingerprint: string, captchaKey?: string): object {
+   private getPayload(username: string, email: string, password: string, dateOfBirth: string, fingerprint: string, captchaKey?: string): object {
       return {
          captcha_key: captchaKey ? captchaKey : null,
          consent: true,
@@ -30,7 +30,7 @@ export default class DiscordRegistrator {
       // Getting random account info
       let username = this.infoGen.randomUser();
       let password = this.infoGen.randomPassword();
-      let email = this.infoGen.randomEmail();
+      let email = await this.infoGen.randomEmail();
       let dateOfBirth = this.infoGen.randomBirth();
       let fingerprint = await getFingerprint();
       let payload = this.getPayload(username, email, password, dateOfBirth, fingerprint);
