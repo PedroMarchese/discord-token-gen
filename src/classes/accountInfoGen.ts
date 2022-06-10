@@ -2,6 +2,7 @@ import fs from 'fs';
 import axios from 'axios';
 import { EmailI } from '../interfaces';
 import EmailManager from '../classes/emailManager';
+import path from 'path';
 
 /**
  * This is a class to generate random account info
@@ -14,7 +15,7 @@ class AccountInfoGen {
     * @returns {string}
     */
    public randomUser(): string {
-      const nameList = fs.readFileSync('../../../files/names.txt', { encoding: 'utf-8' })
+      const nameList = fs.readFileSync(path.join(process.cwd(), 'files', 'names.txt'), { encoding: 'utf-8' })
          .split('\n')
          .map(n => n.trim());
 
