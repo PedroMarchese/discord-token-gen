@@ -5,7 +5,8 @@
   "main": "src/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "debug": "ts-node-dev --respawn --transpile-only src/index.ts"
+    "debug": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "setup": "npm install --only=dev && npm install"
   },
   "keywords": [],
   "author": "",
@@ -20,6 +21,7 @@
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/dotenv": "^8.2.0",
+    "@types/node": "^17.0.42",
     "@types/node-fetch": "^2.6.1",
     "@types/readline-sync": "^1.4.4",
     "ts-node-dev": "^2.0.0"
