@@ -3,5 +3,7 @@ import AccountI from './account';
 import ProxyI from './proxy';
 
 export {
-   EmailI, AccountI, ProxyI
+   EmailI,
+   AccountI,
+   ProxyI
 }

@@ -1,5 +1,5 @@
 export default interface ProxyI {
-   adress: string;
+   address: string;
    port: number;
    user?: string;
    password ?: string;

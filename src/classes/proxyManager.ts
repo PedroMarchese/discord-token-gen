@@ -12,7 +12,9 @@ class ProxyManager {
          .readFileSync(path.join(process.cwd(), 'files', 'proxies.txt'), { encoding: 'utf-8' })
          .split('\n')
 
-      return proxies[Math.floor(Math.random() * proxies.length)];
+      const [ address, port, user, password] = proxies[Math.floor(Math.random() * proxies.length)].split(':');
+      const newProxy: ProxyI = { address: address, port: parseInt(port), password?: password, a?: }
+      return newProxy;
    }
 }
 
