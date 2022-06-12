@@ -1,6 +1,12 @@
-import axios, { AxiosRequestTransformer } from 'axios';
+import axios from 'axios';
 import { getFingerprint, commonHeaders } from '../utils';
-import { CaptchaBypasser, AccountInfoGen, EmailManager } from '.';
+import { EmailI } from '../interfaces'
+import {
+   CaptchaBypasser,
+   AccountInfoGen,
+   EmailManager,
+   ProxyManager
+} from '.';
 
 /**
  * This class has the job of create accounts integrating all generator functions
@@ -9,11 +15,16 @@ import { CaptchaBypasser, AccountInfoGen, EmailManager } from '.';
 export default class DiscordRegistrator {
    infoGen: AccountInfoGen;
    mailManager: EmailManager;
+   proxyManager: ProxyManager;
    registerURL: string;
 
    constructor () {
+      // Instancing managers
       this.infoGen = new AccountInfoGen();
       this.mailManager = new EmailManager();
+      this.proxyManager = new ProxyManager();
+
+      // Constants
       this.registerURL = 'https://discord.com/api/v9/auth/register';
    }
    
@@ -29,7 +40,7 @@ export default class DiscordRegistrator {
     */
    private getPayload(username: string, email: string, password: string, dateOfBirth: string, fingerprint: string, captchaKey?: string): object {
       return {
-         captcha_key: captchaKey ? captchaKey : null,
+         captcha_key: (captchaKey ? captchaKey : null),
          consent: true,
          date_of_birth: dateOfBirth,
          email: email,
@@ -42,12 +53,18 @@ export default class DiscordRegistrator {
       }
    }
 
-   public async start(): Promise<string | null> {
-      // Gets random account info
+   private async getRandomAccountInfos(): Promise<{ username: string, password: string, email: EmailI, dateOfBirth: string }> {
       let username = this.infoGen.randomUser();
       let password = this.infoGen.randomPassword();
       let email = await this.infoGen.randomEmail();
       let dateOfBirth = this.infoGen.randomBirth();
+
+      return { username: username, password: password, email: email, dateOfBirth: dateOfBirth }
+   }
+
+   public async start(useProxy: boolean | string): Promise<string | null> {
+      // Gets random account info
+      const { username, password, email, dateOfBirth } = await this.getRandomAccountInfos();
       
       // Instancing req headers and payload
       let fingerprint = await getFingerprint();
@@ -69,7 +86,6 @@ export default class DiscordRegistrator {
          res = await axios.post(this.registerURL, payload, { headers: headers});
       }
 
-      await res;
       const tokenReg = /[\w-]{24}\.[\w-]{6}\.[\w-]{27}/g;
       let token = res.data.token;
 
