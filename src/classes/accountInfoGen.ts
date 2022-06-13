@@ -19,7 +19,11 @@ class AccountInfoGen {
          .split('\n')
          .map(n => n.trim());
 
-      return nameList[Math.floor(Math.random() * nameList.length)];
+      if (nameList.length > 1) {
+         return nameList[Math.floor(Math.random() * nameList.length)];
+      } else {
+         return Math.random().toString(36).slice(2, 30);
+      }
    }
 
    /**
@@ -64,7 +68,7 @@ class AccountInfoGen {
     * @returns {string}
     */
    public randomBirth(): string {
-      return this.randomDate(new Date('1995-02-12'), new Date('2001-02-12')).toLocaleDateString('en-US');
+      return this.randomDate(new Date('1995-02-12'), new Date('2001-02-12')).toLocaleDateString('pt-BR').replace(/\//g, '-').split('-').reverse().join('-');
    }
 }
 

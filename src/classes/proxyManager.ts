@@ -11,6 +11,7 @@ class ProxyManager {
     * This class returns a Proxy Interface based into this format -> "adress:port:user:password"
     * and they are readed from cwd/files/proxies.txt
     * @returns {ProxyI} 
+    * @author Raskolnikov
     */
    get randomProxy(): ProxyI {
       const proxies = fs

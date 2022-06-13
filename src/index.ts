@@ -22,12 +22,12 @@ async function main() {
    } while(attempts < 1);
    
    // Ask if proxies
-   const useProxy = readline.keyInYN('Wanna use proxy? Y/N');
+   const useProxy = readline.keyInYN('Wanna use proxy?');
    
    // Account creation loop starts
    console.log(`Starting to create ${attempts} accounts!`);
    let success = 0, failed = 0, remaining = attempts;
-   while (remaining !== -1) {
+   while (remaining !== 0) {
       const registrator = new DiscordRegistrator();
       const newAccount = await registrator.start(useProxy);
 
@@ -39,7 +39,7 @@ async function main() {
       process.title = `SUCCESS: ${success} - FAILED: ${failed} - REMAINING: ${remaining}`;
 
       // Random sleep between a range if not proxy
-      useProxy ? await sleep(parseInt(process.env.DELAY!)) : await sleep(Math.floor(Math.random() * 3 * 60 * 1000));
+      useProxy ? await sleep(50) : await sleep(parseInt(process.env.DELAY!));
    }
 }
 
