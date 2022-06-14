@@ -6,33 +6,28 @@ import { sleep } from '../utils';
 type HCaptchaToken = string;
 
 export default class CaptchaSolver {
-   key: string;
-   discordURL: string;
-
-   constructor() {
-      this.key = '4c672d35-0701-42b2-88c3-78380b0db560';
-      this.discordURL = 'http://discord.com/register';
-   }
-
    async getCaptchaID(): Promise<string> {
+      const { CAPTCHA_API, DISCORD_URL, DISCORD_KEY } = process.env
       let res = await axios.get(
-         `http://2captcha.com/in.php?key=${process.env.CAPTCHA_API_KEY}&json=1&method=hcaptcha&pageurl=${this.discordURL}&sitekey=${this.key}`
+         `http://2captcha.com/in.php?key=${CAPTCHA_API}&json=1&method=hcaptcha&pageurl=${DISCORD_URL}&sitekey=${DISCORD_KEY}`
       );
    
       return res.data.request;
    }  
    
    async solveCaptcha(): Promise<HCaptchaToken> {
+      const { CAPTCHA_API, DISCORD_URL, DISCORD_KEY } = process.env
+
       return new Promise(async (resolve, reject) => {
-         await axios.get(`http://2captcha.com/in.php?key=${process.env.CAPTCHA_API_KEY}&json=1&method=hcaptcha&pageurl=${this.discordURL}&sitekey=${this.key}`)
+         await axios.get(`http://2captcha.com/in.php?key=${CAPTCHA_API}&json=1&method=hcaptcha&pageurl=${DISCORD_URL}&sitekey=${DISCORD_KEY}`)
             .then(async res => {
                const id = res.data.request;
 
                // Just because i don't want to write "while(true) {}"
                for (;;) {
-                  await axios.get(`https://2captcha.com/res.php?key=${process.env.CAPTCHA_API_KEY}&action=get&id=${id}&json=1`)
+                  await axios.get(`https://2captcha.com/res.php?key=${CAPTCHA_API}&action=get&id=${id}&json=1`)
                      .then(async r => {
-                        let { status, request } = res.data;
+                        const { status, request } = res.data;
 
                         // CAPTHA SOLVED
                         if (request == 'CAPCHA_NOT_READY') {
