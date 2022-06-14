@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "2captcha-node": "^2.2.1",
     "axios": "^0.27.2",
     "dotenv": "^16.0.1",
     "node-fetch": "^2.6.1",
