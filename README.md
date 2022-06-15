@@ -20,6 +20,7 @@ You need to setup the dotenv file putting the HotmailBox API key if you want to 
 
 ## .ENV FILE
 ```env
+CAPTCHA_API="2CAPTCHA API KEY HERE" # Must have that api
 HOTMAIL_BOX="API KEY HERE" # If you want to verify your accounts
 DISCORD_URL="https://discord.com/register" # Discord url register link
 DISCORD_KEY="4c672d35-0701-42b2-88c3-78380b0db560" # Discord hcaptcha key
