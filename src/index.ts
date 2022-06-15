@@ -1,8 +1,9 @@
 import dotenv from 'dotenv';
-import { DiscordRegistrator } from './classes';
+import { DiscordRegistrator, logger } from './classes';
 import { sleep } from './utils';
 import readline from 'readline-sync';
-
+import fs from 'fs';
+import path from 'path';
 
 // Loading environment variables
 /**
@@ -25,7 +26,8 @@ async function main() {
    const useProxy = readline.keyInYN('Wanna use proxy?');
    
    // Account creation loop starts
-   console.log(`Starting to create ${attempts} accounts!`);
+   logger.log('info', `Starting to create ${attempts} accounts!`);
+   // console.log(`Starting to create ${attempts} accounts!`);
    let success = 0, failed = 0, remaining = attempts;
    while (remaining !== 0) {
       const registrator = new DiscordRegistrator();
@@ -35,9 +37,10 @@ async function main() {
       newAccount ? success++ : failed++;
       remaining--;
 
-      // Changes process title
+      // Account created
+      logger.log('info', `Nova conta criada: ${newAccount}`);
+      fs.appendFileSync(path.join(process.cwd(), 'files', 'accounts.txt'), newAccount!, { encoding: 'utf-8' })
       process.title = `SUCCESS: ${success} - FAILED: ${failed} - REMAINING: ${remaining}`;
-
       // Random sleep between a range if not proxy
       useProxy ? await sleep(50) : await sleep(parseInt(process.env.DELAY!));
    }

@@ -2,10 +2,11 @@ import axios, { AxiosResponse, AxiosRequestConfig, AxiosError, HeadersDefaults, 
 import { getFingerprint, commonHeaders } from '../utils';
 import { EmailI } from '../interfaces'
 import {
-   CaptchaBypasser,
+   CaptchaSolver,
    AccountInfoGen,
    EmailManager,
-   ProxyManager
+   ProxyManager,
+   logger
 } from '.';
 
 /**
@@ -70,11 +71,11 @@ export default class DiscordRegistrator {
       console.log(`Account info generated ${username} | ${password} | ${email.Email} | ${dateOfBirth}!`);
       
       // Instancing req headers and payload
-      const fingerprint = await getFingerprint();
+      let fingerprint = await getFingerprint();
       let payload = this.getPayload(username, email.Email, password, dateOfBirth, fingerprint);
       this.axios.defaults.headers = commonHeaders() as HeadersDefaults;
 
-      console.log(`Registering Account ${email.Email}:${password}`);
+      logger.log('info', `Registering Account ${email.Email}:${password}`);
 
       let requireCaptcha = false;
       let token = '';
@@ -93,21 +94,30 @@ export default class DiscordRegistrator {
       if (requireCaptcha) {
          console.log('Solving Captcha...');
 
-         const cb = new CaptchaBypasser();
-         const captchaKey = cb.bypass();
-         console.log(captchaKey);
+         const cb = new CaptchaSolver();
+         const captchaKey = await cb.solveCaptcha();
+         logger.log('info', captchaKey.slice(0, 15))
+
          payload = this.getPayload(username, email.Email, password, dateOfBirth, fingerprint, captchaKey);
+         fingerprint = await getFingerprint();
 
          await axios.post(this.registerURL, payload, { headers: { 'X-Fingerprint': fingerprint } })
             .then(res => {
+               console.log('*'.repeat(10));
+               console.log(res);
+               console.log('*'.repeat(10));
                token = res.data.token;
             })
-            .catch(err => console.log(err.message));
+            .catch(err => {
+               console.log('*'.repeat(10));
+               // console.log(err);
+               console.log('*'.repeat(10));
+            });
       }
 
       const tokenReg = /[\w-]{24}\.[\w-]{6}\.[\w-]{27}/g;
 
-      // console.log(token)
+      console.log(`Token obtido: ${token}`);
 
       if (tokenReg.test(token)) {
          console.log('Well succeeded!');
