@@ -1,8 +1,13 @@
 # Discord Token Generator
 Open source discord token generator. Has lots of bugs and is a WIP so feel free to help the development process.
 
+# Need To Implement
+proxies
+GUI
+
 ## Requirements
-Python 3.X and NodeJS 16.X or newer
+NodeJS 16.X or newer
+
 ## Installation
 There's a script inside package.json so you can just run or type the same commands inside it
 
@@ -16,6 +21,8 @@ You need to setup the dotenv file putting the HotmailBox API key if you want to 
 ## .ENV FILE
 ```env
 HOTMAIL_BOX="API KEY HERE" # If you want to verify your accounts
+DISCORD_URL="https://discord.com/register" # Discord url register link
+DISCORD_KEY="4c672d35-0701-42b2-88c3-78380b0db560" # Discord hcaptcha key
 DELAY="100"                # How much time to wait until the next account creation
 ```
 
@@ -25,19 +32,7 @@ DELAY="100"                # How much time to wait until the next account creati
 └📁 files
 ⠀└📄 proxies.txt
 ⠀└📄 names.txt
-```
-
-```python
-import foobar
-
-# returns 'words'
-foobar.pluralize('word')
-
-# returns 'geese'
-foobar.pluralize('goose')
-
-# returns 'phenomenon'
-foobar.singularize('phenomena')
+⠀└📄 accounts.txt
 ```
 
 ## Contributing
@@ -46,4 +41,4 @@ Pull requests are welcome. For major changes, please open an issue first to disc
 Please make sure to update tests as appropriate.
 
 ## License
-[MIT](https://choosealicense.com/licenses/mit/)
+[No-License](https://choosealicense.com/licenses/no-license/)

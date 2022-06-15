@@ -1,5 +1,5 @@
-import axios, { AxiosResponse, AxiosRequestConfig, AxiosError, HeadersDefaults, AxiosInstance } from 'axios';
-import { getFingerprint, commonHeaders } from '../utils';
+import axios, { AxiosResponse, AxiosRequestConfig, AxiosError, HeadersDefaults, AxiosInstance, AxiosRequestHeaders } from 'axios';
+import { getFingerprint, commonHeaders, commonHeadersWithFingerprint } from '../utils';
 import { EmailI } from '../interfaces'
 import {
    CaptchaSolver,
@@ -73,14 +73,16 @@ export default class DiscordRegistrator {
       // Instancing req headers and payload
       let fingerprint = await getFingerprint();
       let payload = this.getPayload(username, email.Email, password, dateOfBirth, fingerprint);
-      this.axios.defaults.headers = commonHeaders() as HeadersDefaults;
+      // this.axios.defaults.headers = commonHeaders() as HeadersDefaults;
+      this.axios.defaults.headers = {} as HeadersDefaults;
+      const headers = commonHeaders();
 
       logger.log('info', `Registering Account ${email.Email}:${password}`);
 
       let requireCaptcha = false;
       let token = '';
       // Try to register without captcha
-      await axios.post(this.registerURL, payload, { headers: { 'X-Fingerprint': fingerprint } })
+      await axios.post(this.registerURL, payload, { headers: await commonHeadersWithFingerprint() as AxiosRequestHeaders })
          .then(res => {
             if (res.data.token)
                token = res.data.token;
@@ -101,18 +103,16 @@ export default class DiscordRegistrator {
          payload = this.getPayload(username, email.Email, password, dateOfBirth, fingerprint, captchaKey);
          fingerprint = await getFingerprint();
 
-         await axios.post(this.registerURL, payload, { headers: { 'X-Fingerprint': fingerprint } })
+         await axios.post(this.registerURL, payload, { headers: await commonHeadersWithFingerprint() as AxiosRequestHeaders })
             .then(res => {
                console.log('*'.repeat(10));
-               console.log(res);
+               console.log(res.data);
                console.log('*'.repeat(10));
                token = res.data.token;
             })
             .catch(err => {
-               console.log('*'.repeat(10));
-               // console.log(err);
-               console.log('*'.repeat(10));
-            });
+               console.log(err.message)
+            })
       }
 
       const tokenReg = /[\w-]{24}\.[\w-]{6}\.[\w-]{27}/g;
@@ -122,11 +122,10 @@ export default class DiscordRegistrator {
       if (tokenReg.test(token)) {
          console.log('Well succeeded!');
          
-         return `${email}:${password}:${token}`;
+         return `${email.Email}:${password}:${token}`;
       } else {
          console.log('Failed at all :(');
-         // console.log(res);
-
+         
          return null;
       }
    }

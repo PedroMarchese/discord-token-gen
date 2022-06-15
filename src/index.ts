@@ -6,9 +6,6 @@ import fs from 'fs';
 import path from 'path';
 
 // Loading environment variables
-/**
- * HOTMAIL_BOX -> Hotmailbox API key
- */
 dotenv.config();
 
 /**
@@ -41,6 +38,7 @@ async function main() {
       logger.log('info', `Nova conta criada: ${newAccount}`);
       fs.appendFileSync(path.join(process.cwd(), 'files', 'accounts.txt'), newAccount!, { encoding: 'utf-8' })
       process.title = `SUCCESS: ${success} - FAILED: ${failed} - REMAINING: ${remaining}`;
+
       // Random sleep between a range if not proxy
       useProxy ? await sleep(50) : await sleep(parseInt(process.env.DELAY!));
    }
@@ -48,5 +46,3 @@ async function main() {
 
 //! Running main function to start program
 main()
-   .then(() => console.log('All done.'))
-   .catch(err => console.log(err));
