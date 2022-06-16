@@ -8,7 +8,7 @@ import { ProxyI } from '../interfaces';
  */
 class ProxyManager {
    /**
-    * This class returns a Proxy Interface based into this format -> "adress:port:user:password"
+    * This function returns a Proxy Interface based into this format -> "adress:port:user:password"
     * and they are readed from cwd/files/proxies.txt
     * @returns {ProxyI} 
     * @author Raskolnikov
@@ -18,9 +18,40 @@ class ProxyManager {
          .readFileSync(path.join(process.cwd(), 'files', 'proxies.txt'), { encoding: 'utf-8' })
          .split('\n');
 
-      const [address, port, user, password] = proxies[Math.floor(Math.random() * proxies.length)].split(':');
+      const [ip, port, user, password] = proxies[Math.floor(Math.random() * proxies.length)].split(':');
       
-      return { address: address, port: parseInt(port), user: user, password: password } as ProxyI;
+      return { address: ip, port: parseInt(port), user: user, password: password.replace('\r', '') } as ProxyI;
+   }
+
+   /**
+    * This method does the reverse path
+    * It turns a proxy interface into a formated string "adress:Port:user:password"
+    * @param proxy
+    * @returns {string}
+    * @author Raskolnikov
+    */
+   stringify(proxy: ProxyI): string {
+      const { address, port, user, password } = proxy;
+
+      return `${address}:${port}:${user}:${password}`;
+   }
+
+   /**
+    * This method does the reverse path
+    * It turns a proxy interface into a formated string "adress:Port:user:password"
+    * @param proxy
+    * @returns {string}
+    * @author Raskolnikov
+    */
+   objectify(proxy: ProxyI): object {
+      const { address, port, user, password } = proxy;
+
+      return {
+         protocol: 'https',
+         host: address,
+         port: port,
+         auth: { username: user, password: password }
+      };
    }
 }
 

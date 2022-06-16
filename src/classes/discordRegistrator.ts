@@ -1,6 +1,12 @@
-import axios, { AxiosResponse, AxiosRequestConfig, AxiosError, HeadersDefaults, AxiosInstance, AxiosRequestHeaders } from 'axios';
+import axios, {
+   AxiosRequestConfig,
+   HeadersDefaults,
+   AxiosInstance,
+   AxiosRequestHeaders,
+   AxiosProxyConfig
+} from 'axios';
 import { getFingerprint, commonHeaders, commonHeadersWithFingerprint } from '../utils';
-import { EmailI } from '../interfaces'
+import { EmailI, ProxyI } from '../interfaces'
 import {
    CaptchaSolver,
    AccountInfoGen,
@@ -8,6 +14,8 @@ import {
    ProxyManager,
    logger
 } from '.';
+import httpsAgent from 'https-proxy-agent';
+import url from 'url';
 
 /**
  * This class has the job of create accounts integrating all generator functions
@@ -19,12 +27,16 @@ export default class DiscordRegistrator {
    proxyManager: ProxyManager;
    registerURL: string;
    axios: AxiosInstance;
+   proxy: ProxyI;
+   agent: httpsAgent.HttpsProxyAgent;
 
    constructor () {
       // Instancing managers
       this.infoGen = new AccountInfoGen();
       this.mailManager = new EmailManager();
       this.proxyManager = new ProxyManager();
+      this.proxy = this.proxyManager.randomProxy;
+      this.agent = new httpsAgent.HttpsProxyAgent(`${this.proxy.user}:${this.proxy.password}@zproxy.lum-superproxy.io:22225`);
       this.axios = axios.create();
 
       // Constants
@@ -73,7 +85,7 @@ export default class DiscordRegistrator {
       // Instancing req headers and payload
       let fingerprint = await getFingerprint();
       let payload = this.getPayload(username, email.Email, password, dateOfBirth, fingerprint);
-      // this.axios.defaults.headers = commonHeaders() as HeadersDefaults;
+
       this.axios.defaults.headers = {} as HeadersDefaults;
       const headers = commonHeaders();
 
@@ -82,7 +94,11 @@ export default class DiscordRegistrator {
       let requireCaptcha = false;
       let token = '';
       // Try to register without captcha
-      await axios.post(this.registerURL, payload, { headers: await commonHeadersWithFingerprint() as AxiosRequestHeaders })
+      await axios.post(this.registerURL, payload, {
+         headers: (await commonHeadersWithFingerprint() as AxiosRequestHeaders),
+         proxy: false,
+         httpsAgent: useProxy ? this.agent : undefined
+      })
          .then(res => {
             if (res.data.token)
                token = res.data.token;
@@ -98,33 +114,30 @@ export default class DiscordRegistrator {
 
          const cb = new CaptchaSolver();
          const captchaKey = await cb.solveCaptcha();
-         logger.log('info', captchaKey.slice(0, 15))
+         logger.log('info', captchaKey.slice(0, 30));
 
          payload = this.getPayload(username, email.Email, password, dateOfBirth, fingerprint, captchaKey);
          fingerprint = await getFingerprint();
 
-         await axios.post(this.registerURL, payload, { headers: await commonHeadersWithFingerprint() as AxiosRequestHeaders })
-            .then(res => {
-               console.log('*'.repeat(10));
-               console.log(res.data);
-               console.log('*'.repeat(10));
-               token = res.data.token;
-            })
-            .catch(err => {
-               console.log(err.message)
-            })
+         await axios.post(this.registerURL, payload, { 
+            headers: (await commonHeadersWithFingerprint() as AxiosRequestHeaders),
+            proxy: false,
+            httpsAgent: useProxy ? this.agent : undefined
+         })
+            .then(res => token = res.data.token)
+            .catch(err => console.log(err.message))
       }
 
       const tokenReg = /[\w-]{24}\.[\w-]{6}\.[\w-]{27}/g;
 
-      console.log(`Token obtido: ${token}`);
+      logger.log('info', `New Token: ${token}`);
 
       if (tokenReg.test(token)) {
-         console.log('Well succeeded!');
+         logger.log('info', 'Well succeeded!');
          
          return `${email.Email}:${password}:${token}`;
       } else {
-         console.log('Failed at all :(');
+         logger.log('info', 'Failed at all :(');
          
          return null;
       }

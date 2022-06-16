@@ -12,9 +12,7 @@ export default winston.createLogger({
       })
    ],
    format: combine(
-      timestamp({
-         format: 'hh:mm:ss',
-      }),
+      timestamp({ format: 'hh:mm:ss' }),
       align(),
       printf(info => `[${info.timestamp}] ${info.message}`)
    )
